@@ -2,7 +2,7 @@
     "name": "Обратный отсчет экспедиции",
     "short_name": "Countdown",
     "description": "Приложение для отслеживания времени до окончания экспедиции",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#1a2980",
     "theme_color": "#1a2980",
