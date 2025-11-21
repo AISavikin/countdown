@@ -1033,17 +1033,43 @@ function initializeEventHandlers() {
  * Инициализирует PWA функциональность
  */
 function initializePWA() {
+    // Регистрация Service Worker с усиленной обработкой ошибок
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then((registration) => {
-                console.log('ServiceWorker зарегистрирован:', registration.scope);
-            })
-            .catch((error) => {
-                console.log('Ошибка регистрации ServiceWorker:', error);
+        const swUrl = './service-worker.js';
+        
+        window.addEventListener('load', () => {
+            navigator.serviceWorker
+                .register(swUrl)
+                .then((registration) => {
+                    console.log('SW registered: ', registration);
+                    
+                    // Проверяем обновления
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        console.log('New service worker found:', newWorker);
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('New content is available; please refresh.');
+                            }
+                        });
+                    });
+                })
+                .catch((registrationError) => {
+                    console.error('SW registration failed: ', registrationError);
+                    // Приложение продолжает работать даже без Service Worker
+                    showPersistentMessage('Предупреждение: некоторые функции офлайн-режима могут быть недоступны', 'warning');
+                });
+                
+            // Обработка ошибок в уже зарегистрированном Service Worker
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                console.log('Service Worker controller changed');
             });
-    }
+        });
+    } else {
+        console.log('Service Worker not supported');
+        showPersistentMessage('Ваш браузер не поддерживает все функции приложения', 'warning');
 }
-
 /**
  * Запускает периодические обновления
  */
