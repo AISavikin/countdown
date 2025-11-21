@@ -62,7 +62,6 @@ const DOM = {
     settingsErrorMessage: document.getElementById('settings-error-message'),
     pwaInstallContainer: document.getElementById('pwa-install-container'),
     pwaInstallBtn: document.getElementById('pwa-install-btn')
-
 };
 
 // ===== URL ПАРАМЕТРЫ =====
@@ -246,9 +245,6 @@ function cleanURLParameters() {
 
 // ===== СЛУЖЕБНЫЕ ФУНКЦИИ =====
 
-/**
- * Показывает сообщение об ошибке
- */
 /**
  * Показывает сообщение об ошибке
  */
@@ -450,30 +446,6 @@ function handleFormSubmit(event) {
         
     } catch (error) {
         showError(error.message);
-    }
-}
-
-/**
- * Переключает видимость поля оптимистичной даты в форме
- */
-function toggleOptimisticDateField() {
-    const isVisible = DOM.optimisticDateGroup.style.display === 'block';
-    
-    if (!isVisible) {
-        DOM.optimisticDateGroup.style.display = 'block';
-        DOM.toggleOptimisticBtn.textContent = 'Скрыть оптимистичную дату';
-        
-        // Автозаполняем серединой периода
-        if (DOM.startDateInput.value && DOM.endDateInput.value) {
-            const start = new Date(DOM.startDateInput.value).getTime();
-            const end = new Date(DOM.endDateInput.value).getTime();
-            const middle = new Date((start + end) / 2);
-            DOM.optimisticDateInput.value = middle.toISOString().slice(0, 16);
-        }
-    } else {
-        DOM.optimisticDateGroup.style.display = 'none';
-        DOM.toggleOptimisticBtn.textContent = 'Добавить оптимистичную дату';
-        DOM.optimisticDateInput.value = '';
     }
 }
 
@@ -1058,7 +1030,7 @@ function initializePWA() {
                 .catch((registrationError) => {
                     console.error('SW registration failed: ', registrationError);
                     // Приложение продолжает работать даже без Service Worker
-                    showPersistentMessage('Предупреждение: некоторые функции офлайн-режима могут быть недоступны', 'warning');
+                    console.warn('Предупреждение: некоторые функции офлайн-режима могут быть недоступны');
                 });
                 
             // Обработка ошибок в уже зарегистрированном Service Worker
@@ -1068,8 +1040,10 @@ function initializePWA() {
         });
     } else {
         console.log('Service Worker not supported');
-        showPersistentMessage('Ваш браузер не поддерживает все функции приложения', 'warning');
+        console.warn('Ваш браузер не поддерживает все функции приложения');
+    }
 }
+
 /**
  * Запускает периодические обновления
  */
